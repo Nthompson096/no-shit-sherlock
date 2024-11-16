@@ -2,12 +2,15 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, filedialog
 import subprocess
 import threading
+import json
+import os
 
 class SherlockGUI:
     def __init__(self, master):
         self.master = master
         master.title("Sherlock GUI")
-        master.geometry("800x600")
+        master.geometry("670x715")
+        master.resizable(False, False)  # Disable window resizing
 
         # Username input
         self.username_label = ttk.Label(master, text="Username:")
@@ -56,10 +59,6 @@ class SherlockGUI:
         self.print_found_check = ttk.Checkbutton(master, text="Print Found Sites", variable=self.print_found_var)
         self.print_found_check.grid(row=4, column=0, padx=5, pady=5, sticky="w")
 
-        self.no_color_var = tk.BooleanVar()
-        self.no_color_check = ttk.Checkbutton(master, text="No Color Output", variable=self.no_color_var)
-        self.no_color_check.grid(row=4, column=1, padx=5, pady=5, sticky="w")
-
         self.browse_var = tk.BooleanVar()
         self.browse_check = ttk.Checkbutton(master, text="Browse Results", variable=self.browse_var)
         self.browse_check.grid(row=4, column=2, padx=5, pady=5, sticky="w")
@@ -94,18 +93,88 @@ class SherlockGUI:
         self.output_label = ttk.Label(master, text="No file selected")
         self.output_label.grid(row=10, column=1, columnspan=2, padx=5, pady=5, sticky="w")
 
+        # Save/Load buttons
+        self.save_button = ttk.Button(master, text="Save Settings", command=self.save_settings)
+        self.save_button.grid(row=11, column=0, padx=5, pady=5, sticky="w")
+
+        self.load_button = ttk.Button(master, text="Load Settings", command=self.load_settings)
+        self.load_button.grid(row=11, column=1, padx=5, pady=5, sticky="w")
+
         # Search button
         self.search_button = ttk.Button(master, text="Search", command=self.run_search)
-        self.search_button.grid(row=11, column=0, columnspan=3, pady=10)
+        self.search_button.grid(row=12, column=0, columnspan=3, pady=10)
+
+        # Stop button
+        self.stop_button = ttk.Button(master, text="Stop Search", command=self.stop_search, state=tk.DISABLED)
+        self.stop_button.grid(row=13, column=0, columnspan=3, pady=5)
 
         # Results display
-        self.results_text = scrolledtext.ScrolledText(master, height=20, width=80)
-        self.results_text.grid(row=12, column=0, columnspan=3, padx=5, pady=5)
+        self.results_text = scrolledtext.ScrolledText(master, height=10, width=80)
+        self.results_text.grid(row=14, column=0, columnspan=3, padx=5, pady=5)
+
+        self.process = None
 
     def select_output(self):
-        filename = filedialog.asksaveasfilename(defaultextension=".txt")
+        filename = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON Files", "*.json")])
         if filename:
             self.output_label.config(text=filename)
+
+    def save_settings(self):
+        settings = {
+            "username": self.username_entry.get(),
+            "verbose": self.verbose_var.get(),
+            "csv": self.csv_var.get(),
+            "xlsx": self.xlsx_var.get(),
+            "tor": self.tor_var.get(),
+            "unique_tor": self.unique_tor_var.get(),
+            "dump_response": self.dump_response_var.get(),
+            "no_txt": self.no_txt_var.get(),
+            "nsfw": self.nsfw_var.get(),
+            "print_all": self.print_all_var.get(),
+            "print_found": self.print_found_var.get(),
+            "browse": self.browse_var.get(),
+            "local": self.local_var.get(),
+            "timeout": self.timeout_entry.get(),
+            "site": self.site_entry.get(),
+            "proxy": self.proxy_entry.get(),
+            "json_file": self.json_entry.get(),
+            "output_file": self.output_label.cget("text")
+        }
+
+        settings_file = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON Files", "*.json")])
+        if settings_file:
+            with open(settings_file, "w") as f:
+                json.dump(settings, f, indent=4)
+
+    def load_settings(self):
+        settings_file = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
+        if settings_file:
+            with open(settings_file, "r") as f:
+                settings = json.load(f)
+                self.username_entry.delete(0, tk.END)
+                self.username_entry.insert(0, settings.get("username", ""))  # Default to empty string if not found
+                self.verbose_var.set(settings.get("verbose", False))
+                self.csv_var.set(settings.get("csv", False))
+                self.xlsx_var.set(settings.get("xlsx", False))
+                self.tor_var.set(settings.get("tor", False))
+                self.unique_tor_var.set(settings.get("unique_tor", False))
+                self.dump_response_var.set(settings.get("dump_response", False))
+                self.no_txt_var.set(settings.get("no_txt", False))
+                self.nsfw_var.set(settings.get("nsfw", False))
+                self.print_all_var.set(settings.get("print_all", False))
+                self.print_found_var.set(settings.get("print_found", False))
+                self.browse_var.set(settings.get("browse", False))
+                self.local_var.set(settings.get("local", False))
+                self.timeout_entry.delete(0, tk.END)
+                self.timeout_entry.insert(0, settings.get("timeout", "60"))
+                self.site_entry.delete(0, tk.END)
+                self.site_entry.insert(0, settings.get("site", ""))
+                self.proxy_entry.delete(0, tk.END)
+                self.proxy_entry.insert(0, settings.get("proxy", ""))
+                self.json_entry.delete(0, tk.END)
+                self.json_entry.insert(0, settings.get("json_file", ""))
+                self.output_label.config(text=settings.get("output_file", "No file selected"))
+
 
     def run_search(self):
         username = self.username_entry.get()
@@ -116,8 +185,15 @@ class SherlockGUI:
         self.results_text.delete('1.0', tk.END)
         self.results_text.insert(tk.END, f"Searching for username: {username}\n\n")
         
+        self.stop_button.config(state=tk.NORMAL)  # Enable stop button
         thread = threading.Thread(target=self.sherlock_search, args=(username,))
         thread.start()
+
+    def stop_search(self):
+        if self.process:
+            self.process.terminate()
+            self.results_text.insert(tk.END, "\nSearch stopped.\n")
+            self.stop_button.config(state=tk.DISABLED)
 
     def sherlock_search(self, username):
         try:
@@ -143,8 +219,6 @@ class SherlockGUI:
                 command.append('--print-all')
             if self.print_found_var.get():
                 command.append('--print-found')
-            if self.no_color_var.get():
-                command.append('--no-color')
             if self.browse_var.get():
                 command.append('--browse')
             if self.local_var.get():
@@ -170,20 +244,20 @@ class SherlockGUI:
             if output_file != "No file selected":
                 command.extend(['--output', output_file])
 
-            process = subprocess.Popen(command, 
-                                       stdout=subprocess.PIPE, 
-                                       stderr=subprocess.PIPE,
-                                       text=True)
+            self.process = subprocess.Popen(command, 
+                                            stdout=subprocess.PIPE, 
+                                            stderr=subprocess.PIPE,
+                                            text=True)
             
-            for line in process.stdout:
+            for line in self.process.stdout:
                 self.results_text.insert(tk.END, line)
                 self.results_text.see(tk.END)
                 self.results_text.update()
 
-            process.wait()
+            self.process.wait()
 
-            if process.returncode != 0:
-                error_output = process.stderr.read()
+            if self.process.returncode != 0:
+                error_output = self.process.stderr.read()
                 self.results_text.insert(tk.END, f"Error: {error_output}\n")
             
             self.results_text.insert(tk.END, "\nSearch completed.\n")

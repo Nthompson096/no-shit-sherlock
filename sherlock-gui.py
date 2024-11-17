@@ -307,22 +307,15 @@ class SherlockGUI:
             if json_file:
                 command.extend(['--json', json_file])
 
-            # Use the selected output file directly
+            # Use the selected output file directly (only add if file is selected)
             output_file = self.output_label.cget("text")
             if output_file != "No file selected":
                 command.extend(['--output', output_file])
-            else:
-                # Debugging output if the file isn't selected correctly
-                self.results_text.insert(tk.END, "No output file selected.\n")
-                return
 
             # Add --folderoutput if the user has selected a folder
             folder = self.folder_label.cget("text")
             if folder and folder != "No folder selected":
                 command.extend(['--folderoutput', folder])
-
-            # Debugging: print the final command to verify
-            # print(f"Running command: {' '.join(command)}")
 
             # Run the command
             self.process = subprocess.Popen(command, 

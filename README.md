@@ -1,8 +1,7 @@
 # sherlock-gui
 A python script that will directly interact with sherlock if installed on your system
 
-![image](https://github.com/user-attachments/assets/95738bdf-c259-4dad-8ea1-964764a4e2cf)
-
+![image](https://github.com/user-attachments/assets/cd642f89-8a31-4be7-af8f-a63ed906a59c)
 
 ## What it does!
 

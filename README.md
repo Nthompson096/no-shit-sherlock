@@ -1,9 +1,9 @@
 
-# **Sherlock GUI Tool**
+# **No Shit Sherlock**
 
 ![image](https://github.com/user-attachments/assets/cd642f89-8a31-4be7-af8f-a63ed906a59c)
 
-The **Sherlock GUI** provides a user-friendly graphical interface for the powerful **Sherlock** Python tool, which searches for social media accounts associated with a specific username across multiple platforms. This GUI tool enables users to perform these searches without requiring the use of the command line.
+**No Shit Sherlock** provides a user-friendly graphical interface for the powerful **Sherlock** Python tool, which searches for social media accounts associated with a specific username across multiple platforms. This GUI tool enables users to perform these searches without requiring the use of the command line.
 
 ## **Features**
 

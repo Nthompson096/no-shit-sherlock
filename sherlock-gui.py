@@ -108,11 +108,6 @@ class SherlockGUI:
         self.json_entry = ttk.Entry(master, width=50)
         self.json_entry.grid(row=9, column=1, columnspan=2, padx=5, pady=5)
 
-        # Add a checkbox for selecting output file option
-        # self.output_checkbox_var = tk.BooleanVar(value=True)  # Default to True, meaning use file
-        # self.output_checkbox = ttk.Checkbutton(master, text="Save to file", variable=self.output_checkbox_var)
-        # self.output_checkbox.grid(row=10, column=0, columnspan=3, padx=5, pady=5, sticky="w")
-
         # Add a button for selecting the folder to output the results
         self.folder_button = ttk.Button(master, text="Select Output Folder", command=self.select_folder)
         self.folder_button.grid(row=11, column=0, columnspan=3, padx=5, pady=5, sticky="nsew")

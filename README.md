@@ -1,7 +1,7 @@
 
 # **No Shit Sherlock**
 
-![image](https://github.com/user-attachments/assets/cd642f89-8a31-4be7-af8f-a63ed906a59c)
+![image](https://github.com/user-attachments/assets/36166a26-d3d9-4519-a4fb-145bb32cde47)
 
 **No Shit Sherlock** provides a user-friendly graphical interface for the powerful **Sherlock** Python tool, which searches for social media accounts associated with a specific username across multiple platforms. This GUI tool enables users to perform these searches without requiring the use of the command line.
 

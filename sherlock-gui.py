@@ -109,9 +109,9 @@ class SherlockGUI:
         self.json_entry.grid(row=9, column=1, columnspan=2, padx=5, pady=5)
 
         # Add a checkbox for selecting output file option
-        self.output_checkbox_var = tk.BooleanVar(value=True)  # Default to True, meaning use file
-        self.output_checkbox = ttk.Checkbutton(master, text="Save to file", variable=self.output_checkbox_var)
-        self.output_checkbox.grid(row=10, column=0, columnspan=3, padx=5, pady=5, sticky="w")
+        # self.output_checkbox_var = tk.BooleanVar(value=True)  # Default to True, meaning use file
+        # self.output_checkbox = ttk.Checkbutton(master, text="Save to file", variable=self.output_checkbox_var)
+        # self.output_checkbox.grid(row=10, column=0, columnspan=3, padx=5, pady=5, sticky="w")
 
         # Add a button for selecting the folder to output the results
         self.folder_button = ttk.Button(master, text="Select Output Folder", command=self.select_folder)
@@ -307,16 +307,22 @@ class SherlockGUI:
             if json_file:
                 command.extend(['--json', json_file])
 
-            # Output file selection
-            if self.output_checkbox_var.get():
-                output_file = self.output_label.cget("text")
-                if output_file != "No file selected":
-                    command.extend(['--output', output_file])
+            # Use the selected output file directly
+            output_file = self.output_label.cget("text")
+            if output_file != "No file selected":
+                command.extend(['--output', output_file])
+            else:
+                # Debugging output if the file isn't selected correctly
+                self.results_text.insert(tk.END, "No output file selected.\n")
+                return
 
-            # Folder output selection
+            # Add --folderoutput if the user has selected a folder
             folder = self.folder_label.cget("text")
             if folder and folder != "No folder selected":
                 command.extend(['--folderoutput', folder])
+
+            # Debugging: print the final command to verify
+            # print(f"Running command: {' '.join(command)}")
 
             # Run the command
             self.process = subprocess.Popen(command, 

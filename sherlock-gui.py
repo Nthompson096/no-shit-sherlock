@@ -9,8 +9,27 @@ class SherlockGUI:
     def __init__(self, master):
         self.master = master
         master.title("Sherlock GUI")
-        master.geometry("670x715")
+        master.geometry("670x730")
         master.resizable(False, False)  # Disable window resizing
+
+        # Dark theme settings
+        self.bg_color = "#2E2E2E"
+        self.fg_color = "#FFFFFF"
+        self.entry_bg_color = "#3C3C3C"
+        self.entry_fg_color = "#3C3C3C"
+        self.button_bg_color = "#555555"
+        self.button_fg_color = "#FFFFFF"
+        self.checkbutton_bg_color = "#2E2E2E"
+        self.checkbutton_fg_color = "#FFFFFF"
+        
+        master.config(bg=self.bg_color)
+
+        # Set ttk style for dark theme
+        self.style = ttk.Style()
+        self.style.configure("TButton", background=self.button_bg_color, foreground=self.button_fg_color)
+        self.style.configure("TCheckbutton", background=self.checkbutton_bg_color, foreground=self.checkbutton_fg_color)
+        self.style.configure("TLabel", background=self.bg_color, foreground=self.fg_color)
+        self.style.configure("TEntry", background=self.entry_bg_color, foreground=self.entry_fg_color)
 
         # Username input
         self.username_label = ttk.Label(master, text="Username:")
@@ -83,36 +102,50 @@ class SherlockGUI:
         self.proxy_entry = ttk.Entry(master, width=50)
         self.proxy_entry.grid(row=8, column=1, columnspan=2, padx=5, pady=5)
 
+        # JSON File Label and Entry
         self.json_label = ttk.Label(master, text="JSON File:")
         self.json_label.grid(row=9, column=0, padx=5, pady=5, sticky="w")
         self.json_entry = ttk.Entry(master, width=50)
         self.json_entry.grid(row=9, column=1, columnspan=2, padx=5, pady=5)
 
+        # Output File Selection
         self.output_button = ttk.Button(master, text="Select Output File", command=self.select_output)
-        self.output_button.grid(row=10, column=0, padx=5, pady=5, sticky="w")
+        self.output_button.grid(row=10, column=0, columnspan=3, padx=5, pady=5, sticky="nsew")
+
         self.output_label = ttk.Label(master, text="No file selected")
-        self.output_label.grid(row=10, column=1, columnspan=2, padx=5, pady=5, sticky="w")
+        self.output_label.grid(row=11, column=0, columnspan=3, padx=5, pady=5, sticky="w")
 
         # Save/Load buttons
         self.save_button = ttk.Button(master, text="Save Settings", command=self.save_settings)
-        self.save_button.grid(row=11, column=0, padx=5, pady=5, sticky="w")
+        self.save_button.grid(row=12, column=0, padx=5, pady=5, sticky="nsew")
 
         self.load_button = ttk.Button(master, text="Load Settings", command=self.load_settings)
-        self.load_button.grid(row=11, column=1, padx=5, pady=5, sticky="w")
+        self.load_button.grid(row=12, column=1, padx=5, pady=5, sticky="nsew")
 
         # Search button
         self.search_button = ttk.Button(master, text="Search", command=self.run_search)
-        self.search_button.grid(row=12, column=0, columnspan=3, pady=10)
+        self.search_button.grid(row=13, column=0, columnspan=3, pady=10, sticky="nsew")
 
         # Stop button
         self.stop_button = ttk.Button(master, text="Stop Search", command=self.stop_search, state=tk.DISABLED)
-        self.stop_button.grid(row=13, column=0, columnspan=3, pady=5)
+        self.stop_button.grid(row=14, column=0, columnspan=3, pady=5, sticky="nsew")
 
         # Results display
-        self.results_text = scrolledtext.ScrolledText(master, height=10, width=80)
-        self.results_text.grid(row=14, column=0, columnspan=3, padx=5, pady=5)
+        self.results_text = scrolledtext.ScrolledText(master, height=10, width=80, bg="#3C3C3C", fg="#FFFFFF")
+        self.results_text.grid(row=15, column=0, columnspan=3, padx=5, pady=5)
 
-        self.process = None
+        # Grid Configuration for Centering
+        master.grid_rowconfigure(10, weight=1)  # Center output section
+        master.grid_rowconfigure(11, weight=1)  # Center output label
+        master.grid_rowconfigure(12, weight=1)  # Center save/load buttons
+        master.grid_rowconfigure(13, weight=1)  # Center search button
+        master.grid_rowconfigure(14, weight=1)  # Center stop button
+        master.grid_rowconfigure(15, weight=1)  # Center results text area
+
+        master.grid_columnconfigure(0, weight=1)  # Ensure the columns are flexible for centering
+        master.grid_columnconfigure(1, weight=1)
+        master.grid_columnconfigure(2, weight=1)
+
 
     def select_output(self):
         filename = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON Files", "*.json")])
@@ -186,14 +219,36 @@ class SherlockGUI:
         self.results_text.insert(tk.END, f"Searching for username: {username}\n\n")
         
         self.stop_button.config(state=tk.NORMAL)  # Enable stop button
+        # Start the Sherlock search in a separate thread
         thread = threading.Thread(target=self.sherlock_search, args=(username,))
         thread.start()
 
+    def monitor_process(self):
+        while self.process.poll() is None:
+            time.sleep(1)  # Check every second
+
+        # Once the process finishes, disable the stop button
+        self.stop_button.config(state=tk.DISABLED)
+
     def stop_search(self):
         if self.process:
-            self.process.terminate()
-            self.results_text.insert(tk.END, "\nSearch stopped.\n")
+            # Check if the process is still running
+            if self.process.poll() is None:  # None means the process is still running
+                self.process.terminate()
+                self.results_text.insert(tk.END, "\nSearch stopped.\n")
+                self.stop_button.config(state=tk.DISABLED)
+            else:
+                # If the process is not running (finished), disable the Stop button
+                self.stop_button.config(state=tk.DISABLED)
+        else:
+            # If no process is active, disable the Stop button
             self.stop_button.config(state=tk.DISABLED)
+
+    # Optionally, you can add a background thread to check the process status periodically
+    def check_process_status(self):
+        if self.process and self.process.poll() is not None:  # Process has finished
+            self.stop_button.config(state=tk.DISABLED)
+
 
     def sherlock_search(self, username):
         try:
@@ -256,11 +311,16 @@ class SherlockGUI:
 
             self.process.wait()
 
+            # Check for errors
             if self.process.returncode != 0:
                 error_output = self.process.stderr.read()
                 self.results_text.insert(tk.END, f"Error: {error_output}\n")
-            
+
             self.results_text.insert(tk.END, "\nSearch completed.\n")
+            
+            # After process finishes, disable the stop button
+            self.master.after(0, self.stop_button.config, {'state': tk.DISABLED})
+
         except Exception as e:
             self.results_text.insert(tk.END, f"An error occurred: {str(e)}\n")
 

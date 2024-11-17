@@ -68,10 +68,6 @@ The **Sherlock GUI** is a graphical user interface (GUI) designed for interactin
 - **Sherlock Tool**: The Sherlock Python tool must be installed and available on the system.
 - **Python 3**: The program is written in Python 3 and requires the `tkinter` module for the GUI, `subprocess` for running the Sherlock tool, and `threading` for background execution.
 
-## Summary
-
-This tool simplifies the use of the Sherlock username search by providing an easy-to-use interface for configuring search parameters, initiating searches, and displaying results. It allows users to customize their searches with a variety of options and save/load their configurations for future use.
-
 # How to install:
 
 It utilizes sherlock as the backend and the GUI as the frontend, you can find out how to install sherlock [here](https://sherlockproject.xyz/installation) as that's a dependent. 

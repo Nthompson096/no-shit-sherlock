@@ -65,11 +65,5 @@ The **Sherlock GUI** is a graphical user interface (GUI) designed for interactin
 
 ## Requirements
 
-- **Sherlock Tool**: The Sherlock Python tool must be installed and available on the system.
+- **Sherlock Tool**: [The Sherlock Python tool must be installed and available on the system](https://sherlockproject.xyz/installation).
 - **Python 3**: The program is written in Python 3 and requires the `tkinter` module for the GUI, `subprocess` for running the Sherlock tool, and `threading` for background execution. Should work as this is built in python WOMM.
-
-# How to install:
-
-It utilizes sherlock as the backend and the GUI as the frontend, you can find out how to install sherlock [here](https://sherlockproject.xyz/installation) as that's a dependent. 
-Uses almost all of the commands (except no color terminal output).
-Pretty cut and dry for now; doesn't require you to install a virtual environment.

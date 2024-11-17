@@ -8,7 +8,7 @@ import os
 class SherlockGUI:
     def __init__(self, master):
         self.master = master
-        master.title("Sherlock GUI")
+        master.title("No Shit Sherlock")
         master.geometry("670x830")
         master.resizable(False, False)  # Disable window resizing
 

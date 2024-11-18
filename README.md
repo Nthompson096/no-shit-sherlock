@@ -21,13 +21,7 @@
 - **Print Found Sites**: Shows only the sites where the username is found (`--print-found`).
 
 ### **3. Proxy and Network Options**
-- **Use Tor**: Runs the search through the Tor network for anonymity (`--tor`, `-t`).
-- **Unique Tor**: Uses a new Tor circuit for each request to avoid detection (`--unique-tor`, `-u`).
 - **Proxy URL**: Allows configuration of a custom proxy server (`--proxy PROXY_URL`).
-
-**DISCLAIMER**
-
-Tor options will be deprecated from the main branch.
 
 ### **4. File and Folder Selection**
 - **Select Output Folder**: Choose where to save the results if searching for multiple usernames, similar to the `--folderoutput` option (`-fo`).

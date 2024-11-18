@@ -25,6 +25,10 @@
 - **Unique Tor**: Uses a new Tor circuit for each request to avoid detection (`--unique-tor`, `-u`).
 - **Proxy URL**: Allows configuration of a custom proxy server (`--proxy PROXY_URL`).
 
+**DISCLAIMER**
+
+Tor options will be deprecated from the main branch.
+
 ### **4. File and Folder Selection**
 - **Select Output Folder**: Choose where to save the results if searching for multiple usernames, similar to the `--folderoutput` option (`-fo`).
 - **Select Output File**: Choose the file name for saving results, compatible with JSON output (`--output` for single username or `--json JSON_FILE`).

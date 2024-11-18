@@ -50,25 +50,17 @@ class SherlockGUI:
         self.xlsx_check = ttk.Checkbutton(master, text="XLSX Output", variable=self.xlsx_var)
         self.xlsx_check.grid(row=1, column=2, padx=5, pady=5, sticky="w")
 
-        self.tor_var = tk.BooleanVar()
-        self.tor_check = ttk.Checkbutton(master, text="Use Tor", variable=self.tor_var)
-        self.tor_check.grid(row=2, column=0, padx=5, pady=5, sticky="w")
-
-        self.unique_tor_var = tk.BooleanVar()
-        self.unique_tor_check = ttk.Checkbutton(master, text="Unique Tor", variable=self.unique_tor_var)
-        self.unique_tor_check.grid(row=2, column=1, padx=5, pady=5, sticky="w")
-
         self.dump_response_var = tk.BooleanVar()
         self.dump_response_check = ttk.Checkbutton(master, text="Dump Response", variable=self.dump_response_var)
         self.dump_response_check.grid(row=2, column=2, padx=5, pady=5, sticky="w")
 
         self.no_txt_var = tk.BooleanVar()
         self.no_txt_check = ttk.Checkbutton(master, text="No TXT File", variable=self.no_txt_var)
-        self.no_txt_check.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        self.no_txt_check.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
         self.nsfw_var = tk.BooleanVar()
         self.nsfw_check = ttk.Checkbutton(master, text="Include NSFW Sites", variable=self.nsfw_var)
-        self.nsfw_check.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        self.nsfw_check.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
         self.print_all_var = tk.BooleanVar()
         self.print_all_check = ttk.Checkbutton(master, text="Print All Sites", variable=self.print_all_var)
@@ -76,7 +68,7 @@ class SherlockGUI:
 
         self.print_found_var = tk.BooleanVar()
         self.print_found_check = ttk.Checkbutton(master, text="Print Found Sites", variable=self.print_found_var)
-        self.print_found_check.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+        self.print_found_check.grid(row=3, column=0, padx=5, pady=5, sticky="w")
 
         self.browse_var = tk.BooleanVar()
         self.browse_check = ttk.Checkbutton(master, text="Browse Results", variable=self.browse_var)
@@ -84,7 +76,7 @@ class SherlockGUI:
 
         self.local_var = tk.BooleanVar()
         self.local_check = ttk.Checkbutton(master, text="Use Local Data", variable=self.local_var)
-        self.local_check.grid(row=5, column=0, padx=5, pady=5, sticky="w")
+        self.local_check.grid(row=4, column=0, padx=5, pady=5, sticky="w")
 
         self.timeout_label = ttk.Label(master, text="Timeout:")
         self.timeout_label.grid(row=6, column=0, padx=5, pady=5, sticky="w")
@@ -107,6 +99,11 @@ class SherlockGUI:
         self.json_label.grid(row=9, column=0, padx=5, pady=5, sticky="w")
         self.json_entry = ttk.Entry(master, width=50)
         self.json_entry.grid(row=9, column=1, columnspan=2, padx=5, pady=5)
+
+        # Add a checkbox for selecting output file option
+        # self.output_checkbox_var = tk.BooleanVar(value=True)  # Default to True, meaning use file
+        # self.output_checkbox = ttk.Checkbutton(master, text="Save to file", variable=self.output_checkbox_var)
+        # self.output_checkbox.grid(row=10, column=0, columnspan=3, padx=5, pady=5, sticky="w")
 
         # Add a button for selecting the folder to output the results
         self.folder_button = ttk.Button(master, text="Select Output Folder", command=self.select_folder)
@@ -182,8 +179,6 @@ class SherlockGUI:
             "verbose": self.verbose_var.get(),
             "csv": self.csv_var.get(),
             "xlsx": self.xlsx_var.get(),
-            "tor": self.tor_var.get(),
-            "unique_tor": self.unique_tor_var.get(),
             "dump_response": self.dump_response_var.get(),
             "no_txt": self.no_txt_var.get(),
             "nsfw": self.nsfw_var.get(),
@@ -213,8 +208,6 @@ class SherlockGUI:
                 self.verbose_var.set(settings.get("verbose", False))
                 self.csv_var.set(settings.get("csv", False))
                 self.xlsx_var.set(settings.get("xlsx", False))
-                self.tor_var.set(settings.get("tor", False))
-                self.unique_tor_var.set(settings.get("unique_tor", False))
                 self.dump_response_var.set(settings.get("dump_response", False))
                 self.no_txt_var.set(settings.get("no_txt", False))
                 self.nsfw_var.set(settings.get("nsfw", False))
@@ -263,10 +256,6 @@ class SherlockGUI:
                 command.append('--csv')
             if self.xlsx_var.get():
                 command.append('--xlsx')
-            if self.tor_var.get():
-                command.append('--tor')
-            if self.unique_tor_var.get():
-                command.append('--unique-tor')
             if self.dump_response_var.get():
                 command.append('--dump-response')
             if self.no_txt_var.get():
